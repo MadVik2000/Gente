@@ -6,8 +6,8 @@ from os import environ
 
 import requests
 
-from spotify.exceptions import SpotifyException
-from spotify.models import SpotifyAccessToken
+from spotify_sdk.exceptions import SpotifyException
+from spotify_sdk.models import SpotifyAccessToken
 
 
 def generate_access_token():
