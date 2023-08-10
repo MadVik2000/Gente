@@ -1,0 +1,33 @@
+[tool.black]
+line-length = 80
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | blib2to3
+  | tests/data
+)/
+'''
+
+[tool.pylint.MASTER]
+load-plugins = ["pylint_django"]
+django-settings-module = "gente.settings"
+
+[tool.pylint.MESSAGES_CONTROL]
+disable="no-member, unsupported-binary-operation, missing-docstring, line-too-long, abstract-method, R,W,C"
+
+[tool.isort]
+profile = "black"
+force_alphabetical_sort_within_sections = true
+float_to_top = true
+
+[tool.pycln]
+all = true
