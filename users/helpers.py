@@ -9,7 +9,7 @@ from django.utils.timezone import now, timedelta
 User = get_user_model()
 
 
-def generate_token(user: User) -> str:
+def generate_user_access_token(user: User) -> str:
     private_key = open("jwtRS256.key").read().encode()
     expiration_time = now() + timedelta(days=3)
 
