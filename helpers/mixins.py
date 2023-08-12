@@ -2,7 +2,6 @@
 This file contains all the mixins that can be used within the project
 """
 from django.db import models
-from django.forms import model_to_dict
 from django.utils.functional import empty
 
 
@@ -33,7 +32,7 @@ class ModelDifferenceMixin:
 
             fields.append(field)
 
-        return model_to_dict(self, fields=fields)
+        return {field.name: getattr(self, field.name, None) for field in fields}
 
     def save(self, *args, **kwargs):
         """
