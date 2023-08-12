@@ -13,6 +13,9 @@ class CustomModel(models.Model, ModelDifferenceMixin):
     throughout this project
     """
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     def save(self, *args, **kwargs):
         skip_cleaning = kwargs.pop("skip_cleaning", False)
         if not skip_cleaning:
