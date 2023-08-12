@@ -1,13 +1,40 @@
-import uuid
+from uuid import uuid4
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.cache import cache
 from django.db import models
 
+from helpers.managers import CustomUserManager
+from helpers.models import CustomModel
 
-class User(AbstractUser):
+
+class User(AbstractBaseUser, CustomModel, PermissionsMixin):
     USER_CACHE_KEY = "{user_uuid}_access_token"
-    uuid = models.UUIDField(unique=True, default=uuid.uuid4)
+    email = models.EmailField(unique=True)
+    uuid = models.UUIDField(unique=True, default=uuid4, primary_key=True)
+    is_staff = models.BooleanField(
+        default=False,
+        help_text="Designates whether the user can log into this admin site.",
+        verbose_name="staff status",
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+        verbose_name="active",
+    )
+    is_superuser = models.BooleanField(
+        default=False,
+        help_text="Designates that this user has all permissions without explicitly assigning them.",
+        verbose_name="superuser status",
+    )
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.email
 
     @property
     def get_user_token(self):
