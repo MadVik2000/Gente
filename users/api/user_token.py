@@ -8,12 +8,12 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 
-class GenerateUserToken(APIView):
+class GenerateUserTokenAPI(APIView):
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
         password = serializers.CharField()
 
-    def get(self, request):
+    def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(data=serializer.errors, status=HTTP_400_BAD_REQUEST)

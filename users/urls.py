@@ -9,7 +9,7 @@ from users.api import user_token
 urlpatterns = [
     path(
         "token/",
-        user_token.GenerateUserToken.as_view(),
+        user_token.GenerateUserTokenAPI.as_view(),
         name="generate-user-token",
     ),
 ]
