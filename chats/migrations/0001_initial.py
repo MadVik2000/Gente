@@ -23,23 +23,44 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                (
-                    "session_id",
-                    models.UUIDField(db_index=True, default=uuid.uuid4, unique=True),
-                ),
-                (
-                    "session_closed_at",
-                    models.DateTimeField(blank=True, null=True),
-                ),
+                ("session_id", models.UUIDField(db_index=True, default=uuid.uuid4, unique=True)),
+                ("session_closed_at", models.DateTimeField(blank=True, null=True)),
                 ("is_active", models.BooleanField(default=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_created_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "deleted_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_deleted_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_updated_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
                 "abstract": False,
@@ -52,10 +73,7 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
@@ -69,10 +87,39 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_created_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "deleted_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_deleted_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_updated_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
                     "user",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT,
-                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL
                     ),
                 ),
             ],
@@ -84,10 +131,7 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
@@ -100,6 +144,36 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.CASCADE,
                         to="chats.chatsession",
                         to_field="session_id",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_created_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "deleted_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_deleted_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="%(class)s_updated_by",
+                        to=settings.AUTH_USER_MODEL,
                     ),
                 ),
                 (
@@ -116,15 +190,13 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="chatsessionuser",
             constraint=models.UniqueConstraint(
-                fields=("chat_session", "user"),
-                name="chat_session_user_unique_constraint",
+                fields=("chat_session", "user"), name="chat_session_user_unique_constraint"
             ),
         ),
         migrations.AddConstraint(
             model_name="chatsessionmessage",
             constraint=models.UniqueConstraint(
-                fields=("chat_session", "sequence"),
-                name="chat_session_sequence_unique_key",
+                fields=("chat_session", "sequence"), name="chat_session_sequence_unique_key"
             ),
         ),
     ]

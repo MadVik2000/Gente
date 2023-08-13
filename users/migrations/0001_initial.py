@@ -4,8 +4,6 @@ import uuid
 
 from django.db import migrations, models
 
-import helpers.mixins
-
 
 class Migration(migrations.Migration):
     initial = True
@@ -18,10 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="User",
             fields=[
-                (
-                    "password",
-                    models.CharField(max_length=128, verbose_name="password"),
-                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
                 (
                     "last_login",
                     models.DateTimeField(blank=True, null=True, verbose_name="last login"),
@@ -32,10 +27,7 @@ class Migration(migrations.Migration):
                 (
                     "uuid",
                     models.UUIDField(
-                        default=uuid.uuid4,
-                        primary_key=True,
-                        serialize=False,
-                        unique=True,
+                        default=uuid.uuid4, primary_key=True, serialize=False, unique=True
                     ),
                 ),
                 (
@@ -88,6 +80,5 @@ class Migration(migrations.Migration):
             options={
                 "abstract": False,
             },
-            bases=(models.Model, helpers.mixins.ModelDifferenceMixin),
         ),
     ]
