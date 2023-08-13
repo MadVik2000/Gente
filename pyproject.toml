@@ -22,7 +22,7 @@ load-plugins = ["pylint_django"]
 django-settings-module = "gente.settings"
 
 [tool.pylint.MESSAGES_CONTROL]
-disable="no-member, unsupported-binary-operation, missing-docstring, line-too-long, abstract-method, R,W,C"
+disable="no-member, unsupported-binary-operation, line-too-long, abstract-method, R,W,C"
 
 [tool.isort]
 profile = "black"
