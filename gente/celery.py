@@ -18,8 +18,12 @@ if settings.CELERY_TIMEZONE:
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "check-chat-queue-every-two-seconds": {
+    "check-chat-queue-for-expiry-every-two-seconds": {
         "task": "chats.tasks.remove_expired_users",
         "schedule": timedelta(seconds=2),
-    }
+    },
+    "check-chat-queue-for-session-creation-every-second": {
+        "task": "chats.tasks.add_users_to_session",
+        "schedule": timedelta(seconds=1),
+    },
 }
