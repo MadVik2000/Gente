@@ -7,7 +7,7 @@ from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from rest_framework.views import APIView
 
 from chats.helpers import send_user_to_queue
-from chats.models import ChatSession
+from chats.models import ChatSessionUser
 
 
 class StartChatAPI(APIView):
@@ -18,7 +18,7 @@ class StartChatAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        if ChatSession.objects.filter(
+        if ChatSessionUser.objects.filter(
             user=request.user, chat_session__is_active=True
         ).exists():
             return Response(
