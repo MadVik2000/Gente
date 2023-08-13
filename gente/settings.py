@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users.apps.UsersConfig",
     "chats.apps.ChatsConfig",
+    "helpers.apps.HelpersConfig",
     "rest_framework",
-    "helpers",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -131,6 +132,18 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Cache Keys
+USER_QUEUE_CACHE_KEY = environ["USER_QUEUE_CACHE_KEY"]
+USER_ID_HASH_CACHE_KEY = environ["USER_ID_HASH_CACHE_KEY"]
+
+# Celery Settings
+CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = environ.get("CELERY_TIMEZONE")
+
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
