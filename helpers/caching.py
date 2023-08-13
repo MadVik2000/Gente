@@ -23,18 +23,12 @@ class CustomRedisCaching(Redis):
         values = [self.value_serializer.dumps(value) for value in values]
         return super().lpush(key, *values)
 
-    def lrange(
-        self, key: str, start: int = 0, end: int = -1, instance: bool = True
-    ) -> list:
+    def lrange(self, key: str, start: int = 0, end: int = -1, instance: bool = True) -> list:
         """
         Customised redis LRANGE command to retrieve django model instances
         """
         values = list(super().lrange(name=key, start=start, end=end))
-        return (
-            [self.value_serializer.loads(value) for value in values]
-            if instance
-            else values
-        )
+        return [self.value_serializer.loads(value) for value in values] if instance else values
 
     def rpush(self, key: str, values: Iterable) -> int:
         """

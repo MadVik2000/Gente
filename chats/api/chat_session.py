@@ -18,14 +18,10 @@ class StartChatAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        if ChatSessionUser.objects.filter(
-            user=request.user, chat_session__is_active=True
-        ).exists():
+        if ChatSessionUser.objects.filter(user=request.user, chat_session__is_active=True).exists():
             return Response(
                 status=HTTP_400_BAD_REQUEST,
-                data={
-                    "errors": "User already present in an active chat session."
-                },
+                data={"errors": "User already present in an active chat session."},
             )
         if not send_user_to_queue(user=request.user):
             return Response(

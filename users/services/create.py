@@ -10,7 +10,5 @@ def create_user(name: str, password: str, email: str) -> User:
     """
     This service is used to create a user instance
     """
-    user = User.objects.create_user(
-        username=name, email=email, password=password
-    )
+    user = User.objects.create_user(username=name, email=email, password=password)
     return user

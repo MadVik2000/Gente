@@ -35,8 +35,6 @@ class CreateChatSessionMessageAPI(APIView):
             message=validated_data["message"],
         )
         if not success:
-            return Response(
-                data=chat_session_message, status=HTTP_400_BAD_REQUEST
-            )
+            return Response(data=chat_session_message, status=HTTP_400_BAD_REQUEST)
 
         return Response(status=HTTP_204_NO_CONTENT)

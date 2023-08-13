@@ -33,9 +33,7 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "session_id",
-                    models.UUIDField(
-                        db_index=True, default=uuid.uuid4, unique=True
-                    ),
+                    models.UUIDField(db_index=True, default=uuid.uuid4, unique=True),
                 ),
                 (
                     "session_closed_at",

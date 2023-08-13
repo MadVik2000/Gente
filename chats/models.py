@@ -33,9 +33,7 @@ class ChatSession(CustomModel):
 
     def validate_is_active(self):
         if self.pk and self.is_active and self.diff.get("is_active"):
-            raise ValidationError(
-                "Chat Session cannot be activated again once inactivated"
-            )
+            raise ValidationError("Chat Session cannot be activated again once inactivated")
 
     def __str__(self):
         return str(self.session_id)
@@ -51,35 +49,22 @@ class ChatSessionUser(CustomModel):
     This models stores all the chat session users
     """
 
-    chat_session = models.ForeignKey(
-        ChatSession, on_delete=models.CASCADE, to_field="session_id"
-    )
+    chat_session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, to_field="session_id")
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def validate_instance_creation(self):
         if not self.chat_session.is_active:
-            raise ValidationError(
-                "Chat Session User cannot be created for inactive chat session"
-            )
+            raise ValidationError("Chat Session User cannot be created for inactive chat session")
 
     def validate_chat_session_users(self):
-        if ChatSessionUser.objects.filter(
-            chat_session__is_active=True, user=self.user
-        ).exists():
-            raise ValidationError(
-                "User already exists in an active chat session"
-            )
+        if ChatSessionUser.objects.filter(chat_session__is_active=True, user=self.user).exists():
+            raise ValidationError("User already exists in an active chat session")
 
         if (
             not self.pk
-            and ChatSessionUser.objects.filter(
-                chat_session_id=self.chat_session_id
-            ).count()
-            == 2
+            and ChatSessionUser.objects.filter(chat_session_id=self.chat_session_id).count() == 2
         ):
-            raise ValidationError(
-                "Chat Session cannot have more than two users at a time."
-            )
+            raise ValidationError("Chat Session cannot have more than two users at a time.")
 
         if self.pk and self.diff.get("user"):
             raise ValidationError("User cannot be changed in a chat session")
@@ -109,9 +94,7 @@ class ChatSessionMessage(CustomModel):
     This model stores all the chat session messages
     """
 
-    chat_session = models.ForeignKey(
-        ChatSession, on_delete=models.CASCADE, to_field="session_id"
-    )
+    chat_session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, to_field="session_id")
     message = models.TextField()
     sequence = models.BigIntegerField(editable=False)
     user = models.ForeignKey(
@@ -122,9 +105,7 @@ class ChatSessionMessage(CustomModel):
 
     def validate_instance_creation(self):
         if not self.chat_session.is_active:
-            raise ValidationError(
-                "Chat Session Message cannot be added for inactive chat session"
-            )
+            raise ValidationError("Chat Session Message cannot be added for inactive chat session")
 
     def validate_chat_session_user(self):
         if not ChatSessionUser.objects.filter(
@@ -143,15 +124,11 @@ class ChatSessionMessage(CustomModel):
 
     def validate_sequence(self):
         if self.pk and self.diff.get("sequence"):
-            raise ValidationError(
-                "Chat Session Message Sequence cannot be updated"
-            )
+            raise ValidationError("Chat Session Message Sequence cannot be updated")
 
         if not self.pk and not self.sequence:
             last_sequence = (
-                ChatSessionMessage.objects.filter(
-                    chat_session_id=self.chat_session_id
-                )
+                ChatSessionMessage.objects.filter(chat_session_id=self.chat_session_id)
                 .order_by("-sequence")
                 .first()
             )

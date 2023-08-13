@@ -57,9 +57,7 @@ class ModelDifferenceMixin:
                 difference_one.get(key, empty),
                 difference_two.get(key, empty),
             )
-            for key in set(difference_one.keys()).union(
-                set(difference_two.keys())
-            )
+            for key in set(difference_one.keys()).union(set(difference_two.keys()))
             if key not in difference_one
             or key not in difference_two
             or difference_one[key] != difference_two[key]

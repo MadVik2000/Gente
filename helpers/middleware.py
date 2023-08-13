@@ -27,9 +27,7 @@ class JWTAuthentication(BaseAuthentication):
             return None
 
         if len(auth) == 1:
-            raise AuthenticationFailed(
-                "Invalid token header. No credentials provided."
-            )
+            raise AuthenticationFailed("Invalid token header. No credentials provided.")
         elif len(auth) > 2:
             raise AuthenticationFailed(
                 "Invalid token header. Token string should not contain spaces."

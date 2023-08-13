@@ -28,6 +28,4 @@ class GenerateUserTokenAPI(APIView):
                 data={"errors": "Invalid Credentials"},
                 status=HTTP_400_BAD_REQUEST,
             )
-        return Response(
-            data={"access_token": user.get_user_token}, status=HTTP_200_OK
-        )
+        return Response(data={"access_token": user.get_user_token}, status=HTTP_200_OK)
