@@ -1,10 +1,15 @@
 import logging
 import time
+from datetime import timedelta
 
 from celery import shared_task
 from celery.exceptions import Retry
 from django.conf import settings
+from django.db import IntegrityError
+from django.db.models import Prefetch
+from django.utils.timezone import now
 
+from chats.models import ChatSession, ChatSessionMessage
 from chats.services import create_session_and_session_users
 from helpers.caching import CustomRedisCaching
 
@@ -64,3 +69,33 @@ def add_users_to_session():
     if not success:
         logging.error(result)
         raise Retry(result)
+
+
+@shared_task
+def terminate_inactive_sessions():
+    inactivation_time = now() - timedelta(minutes=1)
+    chat_sessions = ChatSession.objects.filter(
+        is_active=True, created_at__lt=inactivation_time
+    ).prefetch_related(
+        Prefetch(
+            "chatsessionmessage_set",
+            queryset=ChatSessionMessage.objects.filter(created_at__gte=inactivation_time),
+        )
+    )
+
+    sessions_to_be_inactivated = []
+    for chat_session in chat_sessions:
+        if not chat_session.chatsessionmessage_set.exists():
+            setattr(chat_session, "is_active", False)
+            setattr(chat_session, "session_closed_at", now())
+            sessions_to_be_inactivated.append(chat_session)
+
+    if not sessions_to_be_inactivated:
+        return
+
+    try:
+        ChatSession.objects.bulk_update(
+            sessions_to_be_inactivated, fields=["is_active", "session_closed_at"]
+        )
+    except IntegrityError as error:
+        raise Retry(error)

@@ -26,4 +26,8 @@ app.conf.beat_schedule = {
         "task": "chats.tasks.add_users_to_session",
         "schedule": timedelta(seconds=1),
     },
+    "terminate-inactive-sessions-every-ten-seconds": {
+        "task": "chats.tasks.terminate_inactive_sessions",
+        "schedule": timedelta(seconds=10),
+    },
 }
