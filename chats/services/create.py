@@ -44,6 +44,10 @@ User = get_user_model()
 def create_session_and_session_users(
     users_list: list[User],
 ) -> tuple[bool, Union[str, tuple[ChatSession, ChatSessionUser]]]:
+    """
+    This service is used bulk create chat sessions and chat session users.
+    """
+
     users_pairs = get_user_pairs(users_list)
 
     chat_sessions = []
