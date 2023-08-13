@@ -2,7 +2,7 @@
 This file contains all create services for chats module
 """
 
-from typing import Union
+from typing import Optional, Union
 from uuid import UUID
 
 from django.contrib.auth import get_user_model
@@ -19,6 +19,7 @@ def create_chat_session_message(
     chat_session: Union[ChatSession, str, UUID],
     user: Union[User, str, UUID],
     message: str,
+    created_by: Optional[User] = None,
 ) -> tuple[bool, Union[str, ChatSessionMessage]]:
     """
     This service is used to create a new chat session message instance
@@ -29,6 +30,7 @@ def create_chat_session_message(
         else chat_session,
         user_id=user.uuid if isinstance(user, User) else user,
         message=message,
+        created_by=created_by,
     )
     try:
         chat_session_message.save()
@@ -42,7 +44,7 @@ User = get_user_model()
 
 
 def create_session_and_session_users(
-    users_list: list[User],
+    users_list: list[User], created_by: Optional[User] = None
 ) -> tuple[bool, Union[str, tuple[ChatSession, ChatSessionUser]]]:
     """
     This service is used bulk create chat sessions and chat session users.
@@ -54,13 +56,15 @@ def create_session_and_session_users(
     chat_session_users = []
     try:
         for users in users_pairs:
-            chat_session = ChatSession()
+            chat_session = ChatSession(created_by=created_by)
             chat_session.clean()
             chat_session.clean_fields()
             chat_sessions.append(chat_session)
 
             for user in users:
-                chat_session_user = ChatSessionUser(chat_session=chat_session, user=user)
+                chat_session_user = ChatSessionUser(
+                    chat_session=chat_session, user=user, created_by=created_by
+                )
                 chat_session_user.clean()
                 chat_session_users.append(chat_session_user)
 
