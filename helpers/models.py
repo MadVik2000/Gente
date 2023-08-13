@@ -29,6 +29,8 @@ class CustomModel(models.Model, ModelDifferenceMixin):
         User, on_delete=models.PROTECT, null=True, blank=True, related_name="%(class)s_deleted_by"
     )
 
+    LOG_FIELDS = [created_at, updated_at, created_by, updated_by, deleted_by]
+
     def save(self, *args, **kwargs):
         skip_cleaning = kwargs.pop("skip_cleaning", False)
         if not skip_cleaning:
