@@ -75,6 +75,13 @@ class ChatSessionUser(CustomModel):
         if self.pk and self.diff.get("user"):
             raise ValidationError("User cannot be changed in a chat session")
 
+        if ChatSessionUser.objects.filter(
+            chat_session__is_active=True, user=self.user
+        ).exists():
+            raise ValidationError(
+                "User already exists in an active chat session"
+            )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
