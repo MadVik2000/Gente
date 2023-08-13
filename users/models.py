@@ -5,10 +5,9 @@ from django.core.cache import cache
 from django.db import models
 
 from helpers.managers import CustomUserManager
-from helpers.models import CustomModel
 
 
-class User(AbstractBaseUser, CustomModel, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     USER_CACHE_KEY = "{user_uuid}_access_token"
     email = models.EmailField(unique=True)
     uuid = models.UUIDField(unique=True, default=uuid4, primary_key=True)
@@ -27,6 +26,8 @@ class User(AbstractBaseUser, CustomModel, PermissionsMixin):
         help_text="Designates that this user has all permissions without explicitly assigning them.",
         verbose_name="superuser status",
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
