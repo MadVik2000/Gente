@@ -1,6 +1,8 @@
 """
 This file contains all middlewares related to users application.
 """
+from os import environ
+
 import jwt
 from django.contrib.auth import get_user_model
 from jwt.exceptions import (
@@ -32,7 +34,7 @@ class JWTAuthentication(BaseAuthentication):
             raise AuthenticationFailed(
                 "Invalid token header. Token string should not contain spaces."
             )
-        private_key = open("jwtRS256.key.pub").read().encode()
+        private_key = open(environ["JWT_DECRYPTION_KEY_PATH"]).read().encode()
         try:
             data = jwt.decode(
                 auth[1],
