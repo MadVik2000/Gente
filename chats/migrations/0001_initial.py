@@ -32,6 +32,16 @@ class Migration(migrations.Migration):
                 ("session_closed_at", models.DateTimeField(blank=True, null=True)),
                 ("is_active", models.BooleanField(default=True)),
                 (
+                    "session_terminated_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="%(class)s_terminated_by",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
                     "created_by",
                     models.ForeignKey(
                         blank=True,

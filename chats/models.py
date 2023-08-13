@@ -16,6 +16,13 @@ class ChatSession(CustomModel):
 
     session_id = models.UUIDField(default=uuid4, unique=True, db_index=True)
     session_closed_at = models.DateTimeField(null=True, blank=True)
+    session_terminated_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="%(class)s_terminated_by",
+    )
     is_active = models.BooleanField(default=True)
 
     def validate_session_closed_at(self):
@@ -40,8 +47,8 @@ class ChatSession(CustomModel):
 
     def clean(self):
         super().clean()
-        self.validate_session_closed_at()
         self.validate_is_active()
+        self.validate_session_closed_at()
 
 
 class ChatSessionUser(CustomModel):
@@ -108,11 +115,16 @@ class ChatSessionMessage(CustomModel):
             raise ValidationError("Chat Session Message cannot be added for inactive chat session")
 
     def validate_chat_session_user(self):
-        if not ChatSessionUser.objects.filter(
-            chat_session_id=self.chat_session_id, user_id=self.user_id
-        ).exists():
+        chat_session_users = ChatSessionUser.objects.filter(chat_session_id=self.chat_session_id)
+
+        if not chat_session_users.filter(user_id=self.user_id).exists():
             raise ValidationError(
                 "Chat message cannot be initiated from a user who is not part of that chat session"
+            )
+
+        if not chat_session_users.count() == 2:
+            raise ValidationError(
+                "Chat message can only be initiated when both the users have joined the session"
             )
 
         if self.pk and self.diff.get("user"):
