@@ -42,12 +42,9 @@ class JWTAuthentication(BaseAuthentication):
                 ],
             )
             user = User._default_manager.get(uuid=data["user_uuid"])
-        except (
-            ExpiredSignatureError,
-            InvalidSignatureError,
-            InvalidTokenError,
-            User.DoesNotExist,
-        ) as _error:
-            pass
+        except (ExpiredSignatureError, InvalidSignatureError, InvalidTokenError) as _error:
+            raise AuthenticationFailed("Token signature expired. Please generate a new token.")
+        except User.DoesNotExist as _error:
+            raise AuthenticationFailed("No user exists with given token.")
 
         return (user, None)

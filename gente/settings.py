@@ -100,7 +100,7 @@ CACHES = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "helpers.middleware.JWTAuthentication",
+        "helpers.authentication.JWTAuthentication",
     ]
 }
 
