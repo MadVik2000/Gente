@@ -3,14 +3,10 @@ This file contains custom caching modules used throughout the project
 """
 
 from collections.abc import Iterable
-from os import environ
 from typing import Union
 
 from django.core.cache.backends.redis import RedisSerializer
 from redis.client import Redis
-
-USER_QUEUE_CACHE_KEY = environ["USER_QUEUE_CACHE_KEY"]
-USER_ID_HASH_CACHE_KEY = environ["USER_ID_HASH_CACHE_KEY"]
 
 
 class CustomRedisCaching(Redis):
