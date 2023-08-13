@@ -15,7 +15,6 @@ def generate_user_access_token(user: User) -> str:
 
     payload_data = {
         "user_uuid": str(user.uuid),
-        "username": user.username,
         "email": user.email,
         "exp": expiration_time,
     }
