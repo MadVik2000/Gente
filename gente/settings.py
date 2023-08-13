@@ -54,7 +54,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "users.middleware.CustomAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -96,6 +95,23 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
+    }
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "helpers.middleware.JWTAuthentication",
+    ]
+}
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": environ["DATABASE_NAME"],
+        "USER": environ["DATABASE_USER"],
+        "PASSWORD": environ["DATABASE_PASSWORD"],
+        "HOST": environ["DATABASE_HOST"],
+        "PORT": environ["DATABASE_PORT"],
     }
 }
 
