@@ -5,7 +5,7 @@ from celery import shared_task
 from celery.exceptions import Retry
 from django.conf import settings
 
-from chats.helpers import create_session_and_session_users
+from chats.services import create_session_and_session_users
 from helpers.caching import CustomRedisCaching
 
 # Configure logging
@@ -34,7 +34,10 @@ def remove_expired_users():
         user_time = int(user_timings.get(str(user_instance.uuid), 0))
         if current_time - user_time > 30:
             redis_client.lrem(user_queue_cache_key, 0, user)
-            redis_client.hdel(user_id_hash_cache_key, str(user_instance.uuid))
+            redis_client.hdel(
+                user_id_hash_cache_key,
+                str(user_instance.uuid),
+            )
 
 
 @shared_task
@@ -51,7 +54,9 @@ def add_users_to_session():
     )
     for index, user in enumerate(users):
         redis_client.lrem(
-            name=settings.USER_QUEUE_CACHE_KEY, value=user, count=0
+            name=settings.USER_QUEUE_CACHE_KEY,
+            value=user,
+            count=0,
         )
         users[index] = redis_client.value_serializer.loads(user)
 
