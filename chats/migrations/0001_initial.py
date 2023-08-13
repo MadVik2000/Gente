@@ -31,7 +31,12 @@ class Migration(migrations.Migration):
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                ("session_id", models.UUIDField(default=uuid.uuid4)),
+                (
+                    "session_id",
+                    models.UUIDField(
+                        db_index=True, default=uuid.uuid4, unique=True
+                    ),
+                ),
                 (
                     "session_closed_at",
                     models.DateTimeField(blank=True, null=True),
@@ -62,6 +67,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to="chats.chatsession",
+                        to_field="session_id",
                     ),
                 ),
                 (

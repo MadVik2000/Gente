@@ -14,7 +14,7 @@ class ChatSession(CustomModel):
     This model stores all the chat sessions
     """
 
-    session_id = models.UUIDField(default=uuid4)
+    session_id = models.UUIDField(default=uuid4, unique=True, db_index=True)
     session_closed_at = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -51,7 +51,9 @@ class ChatSessionUser(CustomModel):
     This models stores all the chat session users
     """
 
-    chat_session = models.ForeignKey(ChatSession, on_delete=models.CASCADE)
+    chat_session = models.ForeignKey(
+        ChatSession, on_delete=models.CASCADE, to_field="session_id"
+    )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def validate_instance_creation(self):
@@ -61,6 +63,13 @@ class ChatSessionUser(CustomModel):
             )
 
     def validate_chat_session_users(self):
+        if ChatSessionUser.objects.filter(
+            chat_session__is_active=True, user=self.user
+        ).exists():
+            raise ValidationError(
+                "User already exists in an active chat session"
+            )
+
         if (
             not self.pk
             and ChatSessionUser.objects.filter(
@@ -75,13 +84,6 @@ class ChatSessionUser(CustomModel):
         if self.pk and self.diff.get("user"):
             raise ValidationError("User cannot be changed in a chat session")
 
-        if ChatSessionUser.objects.filter(
-            chat_session__is_active=True, user=self.user
-        ).exists():
-            raise ValidationError(
-                "User already exists in an active chat session"
-            )
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -89,6 +91,9 @@ class ChatSessionUser(CustomModel):
                 name="chat_session_user_unique_constraint",
             )
         ]
+
+    def __str__(self):
+        return str(self.user)
 
     def clean(self):
         super().clean()
@@ -160,6 +165,9 @@ class ChatSessionMessage(CustomModel):
                 name="chat_session_sequence_unique_key",
             )
         ]
+
+    def __str__(self):
+        return f"{str(self.chat_session)}_{str(self.user)}"
 
     def clean(self):
         super().clean()
