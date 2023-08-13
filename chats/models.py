@@ -109,7 +109,9 @@ class ChatSessionMessage(CustomModel):
     This model stores all the chat session messages
     """
 
-    chat_session = models.ForeignKey(ChatSession, on_delete=models.CASCADE)
+    chat_session = models.ForeignKey(
+        ChatSession, on_delete=models.CASCADE, to_field="session_id"
+    )
     message = models.TextField()
     sequence = models.BigIntegerField(editable=False)
     user = models.ForeignKey(
