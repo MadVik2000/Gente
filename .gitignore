@@ -40,6 +40,11 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+# Celery Beat log files
+*.bak
+*.dat
+*.dir
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
