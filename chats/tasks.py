@@ -26,35 +26,45 @@ def remove_expired_users():
     redis_client = CustomRedisCaching()
     current_time = int(time.time())
 
-    user_queue_length = redis_client.llen(user_queue_cache_key)
-    if not user_queue_length:
-        return
+    user_queues = redis_client.hgetall(user_queue_cache_key)
+    for queue, users_queue in user_queues.items():
+        if not users_queue:
+            continue
 
-    user_queue = redis_client.lrange(key=user_queue_cache_key, instance=False)
+        new_users_queue = []
 
-    for user in user_queue:
-        user_data = redis_client.value_serializer.loads(user)
-        if current_time - user_data.get("queue_joining_time") > 30:
-            redis_client.lrem(user_queue_cache_key, 0, user)
+        for user_data in users_queue:
+            if current_time - user_data.get("queue_joining_time") > 60:
+                continue
+            new_users_queue.append(user_data)
+        if not sorted(users_queue, key=lambda element: sorted(element.items())) == sorted(
+            new_users_queue, key=lambda element: sorted(element.items())
+        ):
+            redis_client.hset(name=user_queue_cache_key, key=queue, value=new_users_queue)
 
 
 @shared_task
 def add_users_to_session():
+    user_queue_cache_key = settings.USER_QUEUE_CACHE_KEY
     redis_client = CustomRedisCaching()
-    total_users_in_queue = redis_client.llen(name=settings.USER_QUEUE_CACHE_KEY)
-    if not total_users_in_queue >= 2:
-        return
 
-    users = [
-        user_data.get("user")
-        for user_data in redis_client.lpop(
-            name=settings.USER_QUEUE_CACHE_KEY, count=2 * (total_users_in_queue // 2)
+    user_queues = redis_client.hgetall(user_queue_cache_key)
+    for queue, user_queue in user_queues.items():
+        queue_length = len(user_queue)
+        if not queue_length >= 2:
+            continue
+
+        session_users = user_queue[: 2 * (queue_length // 2)]
+        remaining_users = user_queue[2 * (queue_length // 2) :]
+
+        success, result = create_session_and_session_users(
+            users_list=[user_data.get("user") for user_data in session_users]
         )
-    ]
-    success, result = create_session_and_session_users(users_list=users)
-    if not success:
-        logging.error(result)
-        raise Retry(result)
+        if not success:
+            logging.error(result)
+            raise Retry(result)
+
+        redis_client.hset(name=user_queue_cache_key, key=queue, value=remaining_users)
 
 
 @shared_task

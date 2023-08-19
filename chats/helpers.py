@@ -12,22 +12,22 @@ from helpers.caching import CustomRedisCaching
 User = get_user_model()
 
 
-def send_user_to_queue(user: User):
+def send_user_to_queue(user: User, queue: str = settings.USER_DEFAULT_QUEUE_KEY):
     redis_server = CustomRedisCaching()
-    queue_users = redis_server.lrange(key=settings.USER_QUEUE_CACHE_KEY)
+    queue_users = redis_server.hget(name=settings.USER_QUEUE_CACHE_KEY, key=queue.lower()) or []
     queue_users_email = [queue_user.get("email") for queue_user in queue_users]
     if user.email in queue_users_email:
         return False
-    redis_server.rpush(
-        key=settings.USER_QUEUE_CACHE_KEY,
-        values=[
-            {
-                "user": user,
-                "email": user.email,
-                "queue_joining_time": time.time(),
-            }
-        ],
+
+    queue_users.append(
+        {
+            "user": user,
+            "email": user.email,
+            "queue_joining_time": time.time(),
+        }
     )
+
+    redis_server.hset(name=settings.USER_QUEUE_CACHE_KEY, key=queue.lower(), value=queue_users)
     return True
 
 
