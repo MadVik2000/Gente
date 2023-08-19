@@ -150,7 +150,6 @@ USE_TZ = True
 
 # Cache Keys
 USER_QUEUE_CACHE_KEY = environ["USER_QUEUE_CACHE_KEY"]
-USER_ID_HASH_CACHE_KEY = environ["USER_ID_HASH_CACHE_KEY"]
 
 # Celery Settings
 CELERY_BROKER_URL = environ["CELERY_BROKER_URL"]
