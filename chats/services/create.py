@@ -66,6 +66,7 @@ def create_session_and_session_users(
                     chat_session=chat_session, user=user, created_by=created_by
                 )
                 chat_session_user.clean()
+                chat_session_user.validate_chat_session_users()
                 chat_session_users.append(chat_session_user)
 
         chat_sessions = ChatSession.objects.bulk_create(chat_sessions)
