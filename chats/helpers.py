@@ -15,13 +15,18 @@ User = get_user_model()
 def send_user_to_queue(user: User):
     redis_server = CustomRedisCaching()
     queue_users = redis_server.lrange(key=settings.USER_QUEUE_CACHE_KEY)
-    if user in queue_users:
+    queue_users_email = [queue_user.get("email") for queue_user in queue_users]
+    if user.email in queue_users_email:
         return False
-    redis_server.rpush(settings.USER_QUEUE_CACHE_KEY, [user])
-    redis_server.hset(
-        settings.USER_ID_HASH_CACHE_KEY,
-        str(user.uuid),
-        int(time.time()),
+    redis_server.rpush(
+        key=settings.USER_QUEUE_CACHE_KEY,
+        values=[
+            {
+                "user": user,
+                "email": user.email,
+                "queue_joining_time": time.time(),
+            }
+        ],
     )
     return True
 
